@@ -33,7 +33,7 @@ Data ToyData(Data d, TH1D* h_b)
 {
 	TH1D* hEM = drawFromHisto2(h_b,"toyEM");
 	TH1D* hME = drawFromHisto2(h_b,"toyME");
-	Data newd(hEM,hME,d.m_hsig,d.m_minBin,d.m_maxBin);
+	Data newd(hEM,hME,d.m_hsig);
 	return newd;
 }
 
@@ -139,6 +139,7 @@ TH1D* drawFromHisto2(TH1D* h_source, TString name, double sigma)
 	for (int i=1; i<=nbins; i++){
 		double n = h_source->GetBinContent(i);
 		double err = sigma * (h_source->GetBinError(i));
+		cout << " n = " << n << ", err = " << err << endl;
 		//get gaussian distributed around b
 		double vGaus = RAND.Gaus(n,err);//sqrt(0.5n));
 		if (vGaus<0){vGaus = 0;}

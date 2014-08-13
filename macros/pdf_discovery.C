@@ -5,6 +5,7 @@
 #include "TLine.h"
 #include "TLegend.h"
 #include "TGraph.h"
+#include "TMath.h"
 #include "TF1.h"
 #include <iostream>
 #include <sstream>
@@ -27,23 +28,21 @@ void pdf_discovery(double l0, double l1, double Metl, double ll, int Jets, doubl
 
 	Data d(l0,l1,Metl,ll,Jets);
 
-	//mu for testing
-//	double mu = 2;
+	int numbins = 1000; double pdfmax = 200;
+	TH1D* h_pdf = new TH1D("q_{0}|0","f(q_{0}|0)",numbins,0,pdfmax);
+	TH1D* h_pdf_sig = new TH1D("q_{0}|#mu","f(q_{0}|#mu)",numbins,0,pdfmax);
 
-	TH1D* h_pdf = new TH1D("q_{0}|0","f(q_{0}|0)",2000,0,200);
-	TH1D* h_pdf_sig = new TH1D("q_{0}|#mu","f(q_{0}|#mu)",2000,0,200);
-
-	int numMC = 2000;
+	int numMC = 10000;
 	//generate f(q0|mu)
 	for (int i=0; i<numMC; i++)
 	{
-		if (i % (numMC/10) == 0){ cout << i*(100./numMC) << "%-" << flush;}
+		if (i % (numMC/5) == 0){ cout << i*(50./numMC) << "%-" << flush;}
 		Data dRandsig;
 		dRandsig= Toys::ToyData_Signal(d,mu);
 		//L3
-//		double qZerotoysig = Likelihood::qZero(dRandsig);
+		double qZerotoysig = Likelihood::qZero(dRandsig);
 		//L2
-		double qZerotoysig = Likelihood::qZero(dRandsig,dRandsig.m_muHat);
+//		double qZerotoysig = Likelihood::qZero(dRandsig,dRandsig.m_muHat);
 		dRandsig.free();
 		h_pdf_sig->Fill(qZerotoysig,1./numMC);
 	}
@@ -51,13 +50,13 @@ void pdf_discovery(double l0, double l1, double Metl, double ll, int Jets, doubl
 	//generate f(q0|0)
 	for (int i=0; i<numMC; i++)
 	{
-		if (i % (numMC/10) == 0){ cout << i*(100./numMC) << "%-" << flush;}
+		if (i % (numMC/5) == 0){ cout << 50+i*(50./numMC) << "%-" << flush;}
 		Data dRand;
 		dRand= Toys::ToyData(d);
 		//L3
-//		double qZerotoy = Likelihood::qZero(dRand);
+		double qZerotoy = Likelihood::qZero(dRand);
 		//L2
-		double qZerotoy = Likelihood::qZero(dRand,dRand.m_muHat);
+//		double qZerotoy = Likelihood::qZero(dRand,dRand.m_muHat);
 		dRand.free();
 		h_pdf->Fill(qZerotoy,1./numMC);
 	}
@@ -68,12 +67,22 @@ void pdf_discovery(double l0, double l1, double Metl, double ll, int Jets, doubl
 
 	cout<<"p-value = "<<pvalue<<endl;
 
-	TF1 *chisquare = new TF1("chisuare","0.01*x^(-0.5)*exp(-x/2)/(2^(0.5))/(TMath::Gamma(0.5))",0.001,10);
-
+	TF1 *chisquare = new TF1("chisquare","0.5*x^(-0.5)*exp(-x/2)/((2*pi)^(0.5))*(TMath::Gamma(0.5))",0.001,40);
+	TH1D* half_chisquare  = new TH1D("chisquare","chisquare",numbins,0,pdfmax);
+	double x1 = half_chisquare->GetXaxis()->GetBinCenter(1);
+	double chis1 = 0.5 + 0.25*TMath::Power(x1,-0.5)*exp(-x1/2)/(TMath::Power(TMath::TwoPi(),0.5)*TMath::Gamma(0.5));
+	half_chisquare->SetBinContent(1,chis1);
+	for (int j=2; j<numbins; j++)
+	{
+		double x = half_chisquare->GetXaxis()->GetBinCenter(j);
+		double chis = 0.25*TMath::Power(x,-0.5)*exp(-x/2)/(TMath::Power(TMath::TwoPi(),0.5)*TMath::Gamma(0.5));
+		half_chisquare->SetBinContent(j,chis);
+	}
 	//Plotting and Legend **************************************************
 	TCanvas* c2 = new TCanvas("pdfs","pdfs",600,600); c2 = c2;
 	h_pdf->SetLineWidth(2); h_pdf_sig->SetLineColor(kGreen); h_pdf_sig->SetLineWidth(2);
 	h_pdf->Draw(); h_pdf_sig->Draw("sames"); line->Draw();
+	half_chisquare->Draw("sames");
 	chisquare->Draw("sames");
 
 	TLegend* leg = new TLegend(0.4,0.6,0.9,0.9);
@@ -96,21 +105,21 @@ void pdf_discovery(double l0, double l1, double Metl, double ll, double mu)
 
 	//mu for testing
 //	double mu = 2;
-
-	TH1D* h_pdf = new TH1D("q_{0}|0","f(q_{0}|0)",2000,0,200);
-	TH1D* h_pdf_sig = new TH1D("q_{0}|#mu","f(q_{0}|#mu)",2000,0,200);
+	int numbins = 1000; double pdfmax = 200;
+	TH1D* h_pdf = new TH1D("q_{0}|0","f(q_{0}|0)",numbins,0,pdfmax);
+	TH1D* h_pdf_sig = new TH1D("q_{0}|#mu","f(q_{0}|#mu)",numbins,0,pdfmax);
 
 	int numMC = 10000;
 	//generate f(q0|mu)
 	for (int i=0; i<numMC; i++)
 	{
-		if (i % (numMC/10) == 0){ cout << i*(100./numMC) << "%-" << flush;}
+		if (i % (numMC/5) == 0){ cout << i*(50./numMC) << "%-" << flush;}
 		Data dRandsig;
 		dRandsig= Toys::ToyData_Signal(d,mu);
 		//L3
-//		double qZerotoysig = Likelihood::qZero(dRandsig);
+		double qZerotoysig = Likelihood::qZero(dRandsig);
 		//L2
-		double qZerotoysig = Likelihood::qZero(dRandsig,dRandsig.m_muHat);
+//		double qZerotoysig = Likelihood::qZero(dRandsig,dRandsig.m_muHat);
 		dRandsig.free();
 		h_pdf_sig->Fill(qZerotoysig,1./numMC);
 	}
@@ -118,13 +127,13 @@ void pdf_discovery(double l0, double l1, double Metl, double ll, double mu)
 	//generate f(q0|0)
 	for (int i=0; i<numMC; i++)
 	{
-		if (i % (numMC/10) == 0){ cout << i*(100./numMC) << "%-" << flush;}
+		if (i % (numMC/5) == 0){ cout << 50+i*(50./numMC) << "%-" << flush;}
 		Data dRand;
 		dRand= Toys::ToyData(d);
 		//L3
-//		double qZerotoy = Likelihood::qZero(dRand);
+		double qZerotoy = Likelihood::qZero(dRand);
 		//L2
-		double qZerotoy = Likelihood::qZero(dRand,dRand.m_muHat);
+//		double qZerotoy = Likelihood::qZero(dRand,dRand.m_muHat);
 		dRand.free();
 		h_pdf->Fill(qZerotoy,1./numMC);
 	}
@@ -135,13 +144,19 @@ void pdf_discovery(double l0, double l1, double Metl, double ll, double mu)
 
 	cout<<"p-value = "<<pvalue<<endl;
 
-	TF1 *chisquare = new TF1("chisuare","0.01*x^(-0.5)*exp(-x/2)/(2^(0.5))/(TMath::Gamma(0.5))",0.001,10);
-
+//	TF1 *chisquare = new TF1("chisuare","0.1*x^(-0.5)*exp(-x/2)/(2^(0.5))/(TMath::Gamma(0.5))",0.001,10);
+	TH1D* h_chisquare  = new TH1D("chisquare","chisquare",numbins,0,pdfmax);
+	for (int j=1; j<=numbins; j++)
+	{
+		double x = h_chisquare->GetXaxis()->GetBinCenter(j);
+		double chis = 0.5*TMath::Power(x,-0.5)*exp(-x/2)/(TMath::Power(2,0.5)*TMath::Gamma(0.5));
+		h_chisquare->SetBinContent(j,chis);
+	}
 	//Plotting and Legend **************************************************
 	TCanvas* c2 = new TCanvas("pdfs","pdfs",600,600); c2 = c2;
 	h_pdf->SetLineWidth(2); h_pdf_sig->SetLineColor(kGreen); h_pdf_sig->SetLineWidth(2);
 	h_pdf->Draw(); h_pdf_sig->Draw("sames"); line->Draw();
-	chisquare->Draw("sames");
+	h_chisquare->Draw("sames");
 
 	TLegend* leg = new TLegend(0.4,0.6,0.9,0.9);
 	leg->SetFillColor(kWhite);leg->SetBorderSize(1);leg->SetTextSize(0.05);

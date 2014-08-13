@@ -127,12 +127,81 @@ Data::Data(double l0, double l1, double Metl, double ll)
 	setMuHat();
 }
 
+Data::Data(double l0, double l1, double Metl, double ll,
+		double l0_2, double l1_2, double Metl_2, double ll_2)
+{
+	m_numSR = 2;
+	TH1D* h_EM  = utilities::FindEM(l0,l1,Metl,ll,0);
+	TH1D* h_ME = utilities::FindME(l0,l1,Metl,ll,0);
+	TH1D* h_sig = utilities::FindSig(l0,l1,Metl,ll,0);
+	TH1D* h_EM1  = utilities::FindEM(l0_2,l1_2,Metl_2,ll_2,1);
+	TH1D* h_ME1 = utilities::FindME(l0_2,l1_2,Metl_2,ll_2,1);
+	TH1D* h_sig1 = utilities::FindSig(l0_2,l1_2,Metl_2,ll_2,1);
+
+	setEM(h_EM);
+	setME(h_ME);
+	setEM2(h_EM1);
+	setME2(h_ME1);
+
+	m_nbins = m_numSR*(h_EM->GetXaxis()->GetNbins());
+	setBins();
+
+	setEM(h_EM,h_EM1);
+	setME(h_ME,h_ME1);
+	setSig(h_sig,h_sig1);
+
+	m_minBin = 1;
+	m_maxBin = m_nbins;
+	setN();
+	setM();
+	setS();
+
+	m_muHat = 0;
+	setBlindHistos();
+	setMuHat();
+}
+
+Data::Data(double l0, double l1, double Metl, double ll, int Jets,
+		double l0_2, double l1_2, double Metl_2, double ll_2, int Jets_2)
+{
+	m_numSR = 2;
+	TH1D* h_EM  = utilities::FindEM(l0,l1,Metl,ll,Jets);
+	TH1D* h_ME = utilities::FindME(l0,l1,Metl,ll,Jets);
+	TH1D* h_sig = utilities::FindSig(l0,l1,Metl,ll,Jets);
+	TH1D* h_EM1  = utilities::FindEM(l0_2,l1_2,Metl_2,ll_2,Jets_2);
+	TH1D* h_ME1 = utilities::FindME(l0_2,l1_2,Metl_2,ll_2,Jets_2);
+	TH1D* h_sig1 = utilities::FindSig(l0_2,l1_2,Metl_2,ll_2,Jets_2);
+
+	setEM(h_EM);
+	setME(h_ME);
+	setEM2(h_EM1);
+	setME2(h_ME1);
+
+	m_nbins = m_numSR*(h_EM->GetXaxis()->GetNbins());
+	setBins();
+
+	setEM(h_EM,h_EM1);
+	setME(h_ME,h_ME1);
+	setSig(h_sig,h_sig1);
+
+	m_minBin = 1;
+	m_maxBin = m_nbins;
+	setN();
+	setM();
+	setS();
+
+	m_muHat = 0;
+	setBlindHistos();
+	setMuHat();
+}
 
 Data::Data(Data &d)
 {
 	setEM(d.m_hEM);
 	setME(d.m_hME);
 	setSig(d.m_hsig);
+	setEMBlind(d.m_hEMblind);
+	setMEBlind(d.m_hMEblind);
 	setEM2(NULL);
 	setME2(NULL);
 	m_nbins = d.m_nbins;
@@ -143,7 +212,7 @@ Data::Data(Data &d)
 	setS(d.m_S);
 	setBins(d.m_Bins);
 	m_muHat = 0;
-	setBlindHistos();
+//	setBlindHistos();
 	setMuHat(d.m_muHat);
 }
 
@@ -187,12 +256,11 @@ void Data::setBlindHistos()
 	TString nameEM = tempEM + "_blind";
 	TString tempME = m_hME->GetName();
 	TString nameME = tempME + "_blind";
-	delete gDirectory->FindObject(nameEM);
-	delete gDirectory->FindObject(nameME);
+//	delete gDirectory->FindObject(nameEM);
+//	delete gDirectory->FindObject(nameME);
 
-	m_hEMblind = NULL;//new TH1D(nameEM,nameEM,m_nbins,m_Bins);
-	m_hMEblind = NULL;//new TH1D(nameME,nameME,m_nbins,m_Bins);
-	return;
+	m_hEMblind = new TH1D(nameEM,nameEM,m_nbins,m_Bins);
+	m_hMEblind = new TH1D(nameME,nameME,m_nbins,m_Bins);
 	int bin1 = m_hEM->GetXaxis()->FindBin(100);
 	int bin2 = m_hEM->GetXaxis()->FindBin(150);
 

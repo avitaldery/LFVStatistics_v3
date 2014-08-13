@@ -21,9 +21,14 @@ public:
 	//constructor from cut values
 	Data(double l0, double l1, double Metl, double ll, int Jets);
 	Data(double l0, double l1, double Metl, double ll);
-
+	Data(double l0, double l1, double Metl, double ll,
+			double l0_2, double l1_2, double Metl_2, double ll_2);
+	Data(double l0, double l1, double Metl, double ll,int Jets,
+				double l0_2, double l1_2, double Metl_2, double ll_2,int Jets_2);
 	void setEM(TH1D* hEM){ m_hEM = hEM; m_hEM->SetLineColor(kGreen+2);}
 	void setME(TH1D* hME){ m_hME = hME; m_hME->SetLineColor(kBlue);}
+	void setEMBlind(TH1D* hEMblind){ m_hEMblind = hEMblind;}
+	void setMEBlind(TH1D* hMEblind){ m_hMEblind = hMEblind;}
 	void setSig(TH1D* hsig){ m_hsig = hsig;}
 	void setEM(TH1D* hEM1, TH1D* hEM2);
 	void setME(TH1D* hME1, TH1D* hME2);
@@ -55,7 +60,7 @@ public:
 	//copy muHat. the copy constructor uses this
 	void setMuHat(double muHat);
 
-	void DrawEMME(){ m_hME->Draw("E1"); m_hEM->Draw("E1 sames");}
+	void DrawEMME(){ m_hMEblind->Draw("E1"); m_hEMblind->Draw("E1 sames");}
 	void DrawL3Graph();
 	void DrawL2Graph();
 

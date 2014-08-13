@@ -95,7 +95,7 @@ double LogL(Data d,double mu,double muHat)
 double qZero(Data d)
 {
 	double q0 = 0;
-	if (d.m_muHat>=0)
+	if (1)//d.m_muHat>=0)
 	{
 		double denom = LogL(d,d.m_muHat);
 		double num = LogL(d,0);
@@ -122,7 +122,7 @@ double qZero(Data d, double muHat)
 double qMu(Data d,double mu)
 {
 	double q_mu = 0;
-	if (mu>=d.m_muHat)
+	if (1)//mu>=d.m_muHat)
 	{
 		double denom = LogL(d,d.m_muHat);
 		double num = LogL(d,mu);
@@ -191,7 +191,7 @@ TGraph* GetLambda3Graph(Data d)
 	TGraph* g = new TGraph(nMus,x,y);
 	g->SetName("LogL3");
 	g->GetXaxis()->SetTitle("#mu");
-	g->GetYaxis()->SetTitle("-2Log[L3_{#mu}]");
+	g->GetYaxis()->SetTitle("-2Log[#lambda(#mu)]");
 	g->GetYaxis()->SetRangeUser(-1,20);
 	return g;
 }

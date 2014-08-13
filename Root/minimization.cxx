@@ -48,7 +48,7 @@ void ThreeSig(int &npar, double *gin, double &f, double *par, int iflag)
 
 	double l = Likelihood::qMu(*data,par[0]);
 
-	f = abs(l-9);
+	f = abs(l-10.273);//5.1875 //3sigma and 2sigma corresponding values
 //	cout<<"mu = "<<par[0]<<", f = "<<f<<endl;
 }
 
