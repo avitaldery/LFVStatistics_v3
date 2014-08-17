@@ -24,6 +24,8 @@ double pValue(TH1D* h_pdf, double value);
 double Median(const TH1D * h1);
 
 void drawSensitivity(TH1D* h_vanilla,TString filename,int nbins,double maxMu);
+void drawSensitivity(TH1D* h_vanilla,int nbins,double maxMu);
+
 
 }
 

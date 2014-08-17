@@ -40,6 +40,17 @@ void Lminim(int &npar, double *gin, double &f, double *par, int iflag)
 	f = l;
 }
 
+void Lminim_B(int &npar, double *gin, double &f, double *par, int iflag)
+{
+	// par[0] is muHat
+	// par[1-nbins] is Bhat
+	npar = npar; gin = gin; iflag = iflag;
+	Data *data = (Data*)gMinuit->GetObjectFit();
+	double l = Likelihood::LogL_B(*data,par);
+//	delete data;
+	f = l;
+}
+
 void ThreeSig(int &npar, double *gin, double &f, double *par, int iflag)
 {
 	//par[0] is mu
@@ -57,12 +68,16 @@ void TwoSig(int &npar, double *gin, double &f, double *par, int iflag)
 	//par[0] is mu
 	npar = npar; gin = gin; iflag = iflag;
 	Data *data = (Data*)minuit->GetObjectFit();
-	Data dRandSig;
-	dRandSig = Toys::ToyData_Signal(*data,par[0]);
-	double l0 = Likelihood::qZero(dRandSig);
-
-	dRandSig.free();
-	f = abs(l0-4);
+	double l0sum = 0;
+	int iterations = 20;
+	for (int i=0; i<iterations; i++){
+		Data dRandSig;
+		dRandSig = Toys::ToyData_Signal(*data,par[0]);
+		l0sum += Likelihood::qZero(dRandSig);
+		dRandSig.free();
+	}
+	double l0 = l0sum/iterations;
+	f = abs(l0-5.1875);
 //	cout<<"mu = "<<par[0]<<", l0 = "<<l0<<endl;
 }
 
@@ -84,6 +99,40 @@ double GetMuHat(Data d)
 	delete gMinuit;
 
 	return muHat;
+}
+
+void GetMuHat_B(Data d, double* muHat_B, double* Errors)
+{
+
+	TMinuit *gMinuit = new TMinuit(d.m_nbins+1);
+	gMinuit->SetObjectFit(&d);
+	gMinuit->SetFCN(Lminim_B);
+
+	Int_t ierflg = 0; gMinuit->SetPrintLevel(-1);
+	// initialize the parameters:
+	gMinuit->mnparm(0,"muHat",0,0.0001,-10,10,ierflg);
+	TString varname;
+
+	for (int j=1;j<=d.m_nbins;j++){
+		varname.Form("B%d",j);
+		double minV = (d.m_n[j-1] < d.m_m[j-1] ? d.m_n[j-1] : d.m_m[j-1]);
+		double maxV = (d.m_n[j-1] < d.m_m[j-1] ? d.m_m[j-1] : d.m_n[j-1]);
+		if (minV == maxV){maxV = maxV+1;}
+		double startV = (minV+maxV)/2.;
+//		cout << "n = " << d.m_n[j-1] << ", m = " << d.m_m[j-1] << ", startV = " << startV << endl;
+		gMinuit->mnparm(j,varname,startV,0.0001,minV,maxV,ierflg);
+	}
+
+	gMinuit->SetMaxIterations(500);
+	gMinuit->Migrad();
+
+	for (int i=0; i<=d.m_nbins; i++){
+		gMinuit->GetParameter(i,muHat_B[i],Errors[i]);
+//		cout << "GetMuHat_B:: muHat_B[i] = " << muHat_B[i] << endl;
+	}
+
+	delete gMinuit;
+
 }
 
 

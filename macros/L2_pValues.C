@@ -18,15 +18,15 @@ using namespace Toys;
 using namespace Likelihood;
 using namespace minimization;
 
-void L3_pValues(double l0, double l1, double Metl, double ll, int Jets)
+void L2_pValues(double l0, double l1, double Metl, double ll, int Jets)
 {
 	InitExterns();
-	RAND.SetSeed(1971);
+//	RAND.SetSeed(3);
 
 	Data d(l0,l1,Metl,ll,Jets);
 //	TH1D* h_b = Likelihood::GetBGEstimation(d);
-	TH1D* h_pValues = new TH1D("L3 pvalues","L3 pvalues",20,0,1.1);
-	int numMC = 200;
+	TH1D* h_pValues = new TH1D("L2 pvalues","L2 pvalues",22,0,1.1);
+	int numMC = 1000;
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -41,12 +41,12 @@ void L3_pValues(double l0, double l1, double Metl, double ll, int Jets)
 		{
 			Data dToy;
 			dToy = Toys::ToyData(dRand);
-			double qZero = Likelihood::qZero(dToy);
+			double qZero = Likelihood::qZero(dToy,dToy.m_muHat);
 			dToy.free();
 			pdf->Fill(qZero,1./numMC2);
 		}
 
-		double obs = Likelihood::qZero(dRand);
+		double obs = Likelihood::qZero(dRand,dRand.m_muHat);
 		dRand.free();
 //		pdf->Draw();
 		double pV = utilities::pValue(pdf,obs);
@@ -57,8 +57,8 @@ void L3_pValues(double l0, double l1, double Metl, double ll, int Jets)
 	}
 
 	h_pValues->Draw();
-	TFile* file = new TFile("f10.root","RECREATE");
-	h_pValues->Write("L3_pValues");
+	TFile* file = new TFile("f1000_2.root","RECREATE");
+	h_pValues->Write("L2_pValues");
 	file->Close();
 }
 

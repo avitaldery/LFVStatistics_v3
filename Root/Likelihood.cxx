@@ -61,11 +61,34 @@ double LogL(Data d,double mu)
 		if (mu>=0)
 		{
 			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],b))+TMath::Log(TMath::Poisson(d.m_m[i],b+mu*d.m_S[i])));
-			if (l>10000000000) {cout<< "i = " << i << ", n = " << d.m_n[i] << ", m = " << d.m_m[i] << ", b = " << b << ", S = " << d.m_S[i]<<endl;}
+			if (l>10000000000) {cout<< "LogL:: i = " << i << ", n = " << d.m_n[i] << ", m = " << d.m_m[i] << ", b = " << b << ", S = " << d.m_S[i]<<endl;}
 		}
 		else
 		{
 			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],b-mu*d.m_S[i]))+TMath::Log(TMath::Poisson(d.m_m[i],b)));
+		}
+	}
+	return l;
+}
+
+double LogL_B(Data d,double* muHat_B)
+// for L3 Discovery
+{
+	double l=0;
+	for (int i=d.m_minBin-1; i<d.m_maxBin; i++){
+		if (d.m_n[i]+d.m_m[i] < 0.01){continue;}
+		if (muHat_B[0]>=0)
+		{
+			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],muHat_B[i+1]))+TMath::Log(TMath::Poisson(d.m_m[i],muHat_B[i+1]+muHat_B[0]*d.m_S[i])));
+		}
+		else
+		{
+			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],muHat_B[i+1]-muHat_B[0]*d.m_S[i]))+TMath::Log(TMath::Poisson(d.m_m[i],muHat_B[i+1])));
+		}
+		if (l>10000000000)
+		{
+			cout<< "LogL_B:: l = " << l << ", i = " << i << ", n = " << d.m_n[i] << ", m = " << d.m_m[i] << ", b = " << muHat_B[i+1] << ", mu = " << muHat_B[0] << ", S = " << d.m_S[i]<<endl;
+			break;
 		}
 	}
 	return l;
@@ -100,6 +123,7 @@ double qZero(Data d)
 		double denom = LogL(d,d.m_muHat);
 		double num = LogL(d,0);
 		q0 = num - denom;
+		if (q0<0) {cout<<"negative q0! num = "<< num << ", denom = " << denom << ", muHat = " << d.m_muHat << endl;}
 	}
 	else {q0 = 0;}
 	return q0;
@@ -108,7 +132,7 @@ double qZero(Data d)
 double qZero(Data d, double muHat)
 {//for L2
 	double q0 = 0;
-	if (d.m_muHat>=0)
+	if (1)//d.m_muHat>=0)
 	{
 		double denom = LogL(d,muHat);
 		double num = LogL(d,0,muHat);
@@ -133,43 +157,19 @@ double qMu(Data d,double mu)
 	return q_mu;
 }
 
-double LogL3(Data d, double mu, double muHat)
-{
-	double denom = LogL(d,muHat);
-	double num = LogL(d,mu);
-	double l3 = num - denom;
-	return l3;
+double qMu(Data d,double mu, double muHat)
+{ // for L2
+	double q_mu = 0;
+	if (1)//mu>=d.m_muHat)
+	{
+		double denom = LogL(d,muHat);
+		double num = LogL(d,mu,muHat);
+//		cout << "denom = " << denom << ", num = " << num << endl;
+		q_mu = num - denom;
+	}
+	else {q_mu = 0;}
+	return q_mu;
 }
-
-
-double LogL2(Data d, double mu, double muHat)
-{
-	double denom = LogL(d,muHat);
-	double num = LogL(d,mu,muHat);
-	double l2 = num - denom;
-	return l2;
-}
-
-
-//double LogL_mu(Data d,double mu)
-////for L3 limits
-//{
-//	double l=0;
-//	for (int i=d.m_minBin; i<=d.m_maxBin; i++){
-//		//bhathat
-//		double b = getB(d.m_n[i],d.m_m[i],d.m_S[i],mu);
-//		if (d.m_n[i]+d.m_m[i] < 0.01){continue;}
-//		if (mu>=d.m_muHat)
-//		{
-//			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],b))+TMath::Log(TMath::Poisson(d.m_m[i],b+mu*d.m_S[i])));
-//		}
-//		else
-//		{
-//			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],b-mu*d.m_S[i]))+TMath::Log(TMath::Poisson(d.m_m[i],b)));
-//		}
-//	}
-//	return l;
-//}
 
 TGraph* GetLambda3Graph(Data d)
 {
@@ -210,7 +210,7 @@ TGraph* GetLambda2Graph(Data d)
 
 		// set denominator value for normalization
 		x[i] = mu;
-		y[i] = LogL2(d,mu,d.m_muHat);
+		y[i] = qMu(d,mu,d.m_muHat);
 	}
 
 	TGraph* g = new TGraph(nMus,x,y);

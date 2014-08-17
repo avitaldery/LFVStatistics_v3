@@ -26,7 +26,7 @@ void Sens_limit(double l0, double l1, double Metl, double ll, int Jets)
 	Data d(l0,l1,Metl,ll,Jets);
 
 	double muMax = 10;
-	int numMC = 500; int numbins = 100;
+	int numMC = 50; int numbins = 100;
 	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
 
 	for (int i=0; i<numMC; i++)

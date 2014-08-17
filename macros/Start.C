@@ -24,25 +24,36 @@ void Start(double l0, double l1, double Metl, double ll)
 
 	Data d(l0,l1,Metl,ll,0);
 	cout<<"d.m_muHat = "<<d.m_muHat<<endl;
-//	TCanvas* c1 = new TCanvas("c1","c1",600,600); c1 = c1;
+	TCanvas* c1 = new TCanvas("c1","c1",600,600); c1 = c1;
 //	d.DrawEMME();
 //	d.m_hsig->Draw("sames");
-	cout<<"d: nbins = " << d.m_nbins << endl;
-	cout<<"Bins[0] = " << d.m_Bins[0] << ", Bins[1] = " << d.m_Bins[1] <<endl;
-	cout<<"Bins[44] = " << d.m_Bins[44] << ", Bins[45] = " << d.m_Bins[45] <<endl;
+
+	double muHatB[d.m_nbins+1];
+	double errors[d.m_nbins+1];
+	minimization::GetMuHat_B(d,muHatB,errors);
+
+	TH1D* h_b = new TH1D("b","b",d.m_nbins,d.m_Bins);
+	for (int i=1; i<=d.m_nbins; i++)
+	{
+		cout << "for i = " << i << ", muHatB[i] = " << muHatB[i] << endl;
+		h_b->SetBinContent(i,muHatB[i]);
+	}
+
+	cout<< "muHatB[0] = " << muHatB[0] << endl;
+
+	TH1D* h_b_analytic = Likelihood::GetBGEstimation(d);
+	h_b->Draw();
+	h_b_analytic->SetLineColor(kRed); h_b_analytic->Draw("sames");
+
 
 	Data d1(l0,l1,Metl,ll,1);
-	cout<<"d1.m_muHat = "<<d1.m_muHat<<endl;
 //	TCanvas* c2 = new TCanvas("c2","c2",600,600); c2 = c2;
 //	d1.DrawEMME();
 //	d1.m_hsig->Draw("sames");
-	cout<<"d1: nbins = " << d1.m_nbins << endl;
-	cout<<"Bins[0] = " << d1.m_Bins[0] << ", Bins[1] = " << d1.m_Bins[1] <<endl;
-	cout<<"Bins[44] = " << d1.m_Bins[44] << ", Bins[45] = " << d1.m_Bins[45] <<endl;
+
 
 	Data d2(l0,l1,Metl,ll);
-	cout<<"d2.m_muHat = "<<d2.m_muHat<<endl;
-	TCanvas* c3 = new TCanvas("c3","c3",600,600); c3 = c3;
+//	TCanvas* c3 = new TCanvas("c3","c3",600,600); c3 = c3;
 //	d2.DrawEMME();
 //	d2.m_hsig->Draw("sames");
 //	cout<<"d2: nbins = " << d2.m_nbins << endl;
@@ -63,27 +74,27 @@ void Start(double l0, double l1, double Metl, double ll)
 //	TCanvas* c3 = new TCanvas("c3","c3",600,600); c3 = c3;
 //	cout<<"dRand.m_muHat = "<<dRand.m_muHat<<endl;
 
-	dRand.setMuHat();
-	dRand.DrawL3Graph();
+//	dRand.setMuHat();
+//	dRand.DrawL3Graph();
 //	cout<<"muHat = "<<dRand.m_muHat<<endl;
 
 //	TH1D* h_b = minimization::GetBGEstimation(d);
 
-	TCanvas* c4 = new TCanvas("c4","c4",600,600); c4 = c4;
+//	TCanvas* c4 = new TCanvas("c4","c4",600,600); c4 = c4;
 //	dRand.DrawL2Graph();
 //	d.DrawEMME();
 //	h_b->SetLineColor(kBlack); h_b->SetLineWidth(2); h_b->Draw("e1");
 
-	Data dRandSignal;
-	double mu = 3;
-	dRandSignal = Toys::ToyData_Signal(d.m_hEM,d.m_hsig,mu);
-	dRandSignal.DrawL3Graph();
-
-	TCanvas* c5 = new TCanvas("c5","c5",600,600); c5 = c5;
-	Data dRandSignal2;
-	double mu2 = 6;
-	dRandSignal2 = Toys::ToyData_Signal(d.m_hEM,d.m_hsig,mu2);
-	dRandSignal2.DrawL3Graph();
+//	Data dRandSignal;
+//	double mu = 3;
+//	dRandSignal = Toys::ToyData_Signal(d.m_hEM,d.m_hsig,mu);
+//	dRandSignal.DrawL3Graph();
+//
+//	TCanvas* c5 = new TCanvas("c5","c5",600,600); c5 = c5;
+//	Data dRandSignal2;
+//	double mu2 = 6;
+//	dRandSignal2 = Toys::ToyData_Signal(d.m_hEM,d.m_hsig,mu2);
+//	dRandSignal2.DrawL3Graph();
 //	dRandSignal.setMuHat();
 
 //	cout<<"muHatsignal = "<<dRandSignal.m_muHat<<endl;

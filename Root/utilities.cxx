@@ -175,6 +175,66 @@ void drawSensitivity(TH1D* h_vanilla,TString filename,int nbins,double maxMu)
 	SensFile.close();
 }
 
+void drawSensitivity(TH1D* h_vanilla,int nbins,double maxMu)
+{
+	TCanvas* csens = new TCanvas("sensitivity","sensitivity",600,600); csens = csens;
+
+	h_vanilla->Draw();
+
+	Double_t quantile, quantile_1sigma, quantile_1sigma2, quantile_2sigma, quantile_2sigma2;
+	const Double_t prob = 0.5;
+	const Double_t prob2 = 0.683;
+	const Double_t prob3 = 0.317;
+	const Double_t prob4 = 0.954;
+	const Double_t prob5 = 0.046;
+	h_vanilla->GetQuantiles(1,&quantile,&prob);
+	h_vanilla->GetQuantiles(1,&quantile_1sigma,&prob2);
+	h_vanilla->GetQuantiles(1,&quantile_1sigma2,&prob3);
+	h_vanilla->GetQuantiles(1,&quantile_2sigma,&prob4);
+	h_vanilla->GetQuantiles(1,&quantile_2sigma2,&prob5);
+
+	TH1D* h_green = new TH1D("greenquantile","greenquantile",nbins,0,maxMu);
+	int bin_med = h_green->GetXaxis()->FindBin(quantile);
+	int bin_1sig = h_green->GetXaxis()->FindBin(quantile_1sigma);
+
+	for (int k=bin_med;k<=bin_1sig;k++){
+		h_green->SetBinContent(k,h_vanilla->GetBinContent(k));
+	}
+	h_green->SetFillColor(kGreen);
+	h_green->Draw("sames");
+
+	TH1D* h_green2 = new TH1D("greenquantile2","greenquantile2",nbins,0,maxMu);
+	int bin_1sig2 = h_green2->GetXaxis()->FindBin(quantile_1sigma2);
+
+	for (int k=bin_1sig2;k<=bin_med;k++){
+		h_green2->SetBinContent(k,h_vanilla->GetBinContent(k));
+	}
+	h_green2->SetFillColor(kGreen);
+	h_green2->Draw("sames");
+	TH1D* h_yellow = new TH1D("yellowquantile","yellowquantile",nbins,0,maxMu);
+	int bin_2sig = h_yellow->GetXaxis()->FindBin(quantile_2sigma);
+
+	for (int k=bin_1sig;k<=bin_2sig;k++){
+		h_yellow->SetBinContent(k,h_vanilla->GetBinContent(k));
+	}
+	h_yellow->SetFillColor(kYellow);
+	h_yellow->Draw("sames");
+	TH1D* h_yellow2 = new TH1D("yellowquantile2","yellowquantile2",nbins,0,maxMu);
+	int bin_2sig2 = h_yellow2->GetXaxis()->FindBin(quantile_2sigma2);
+
+	for (int k=bin_2sig2;k<=bin_1sig2;k++){
+		h_yellow2->SetBinContent(k,h_vanilla->GetBinContent(k));
+	}
+	h_yellow2->SetFillColor(kYellow);
+	h_yellow2->Draw("sames");
+
+	//print values
+	cout<<"median value = "<<quantile<<endl;
+	cout<<"1sigma values = "<<quantile_1sigma2<<", "<<quantile_1sigma<<endl;
+	cout<<"2sigma values = "<<quantile_2sigma2<<", "<<quantile_2sigma<<endl;
+
+}
+
 double PrintSideBandProbabilities(TH1D* h_EM,TH1D* h_ME,TH1D* h_B)
 {
 	int nbins = h_ME->GetXaxis()->GetNbins();
