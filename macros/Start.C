@@ -35,11 +35,8 @@ void Start(double l0, double l1, double Metl, double ll)
 	TH1D* h_b = new TH1D("b","b",d.m_nbins,d.m_Bins);
 	for (int i=1; i<=d.m_nbins; i++)
 	{
-		cout << "for i = " << i << ", muHatB[i] = " << muHatB[i] << endl;
 		h_b->SetBinContent(i,muHatB[i]);
 	}
-
-	cout<< "muHatB[0] = " << muHatB[0] << endl;
 
 	TH1D* h_b_analytic = Likelihood::GetBGEstimation(d);
 	h_b->Draw();

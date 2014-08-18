@@ -21,11 +21,11 @@ using namespace minimization;
 void L3_pValues(double l0, double l1, double Metl, double ll, int Jets)
 {
 	InitExterns();
-	RAND.SetSeed(1971);
+	RAND.SetSeed(971);
 
 	Data d(l0,l1,Metl,ll,Jets);
 //	TH1D* h_b = Likelihood::GetBGEstimation(d);
-	TH1D* h_pValues = new TH1D("L3 pvalues","L3 pvalues",20,0,1.1);
+	TH1D* h_pValues = new TH1D("L3 pvalues","L3 pvalues",20,0,1.01);
 	int numMC = 200;
 
 	for (int i=0; i<numMC; i++)
@@ -57,7 +57,7 @@ void L3_pValues(double l0, double l1, double Metl, double ll, int Jets)
 	}
 
 	h_pValues->Draw();
-	TFile* file = new TFile("f10.root","RECREATE");
+	TFile* file = new TFile("fL3_9.root","RECREATE");
 	h_pValues->Write("L3_pValues");
 	file->Close();
 }

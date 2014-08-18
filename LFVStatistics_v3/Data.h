@@ -19,6 +19,7 @@ public:
 	//copy constructor
 	Data(Data&);
 	//constructor from cut values
+	Data(double l0, double l1, double Metl, double ll, double delPt, double Metl0);
 	Data(double l0, double l1, double Metl, double ll, int Jets);
 	Data(double l0, double l1, double Metl, double ll);
 	Data(double l0, double l1, double Metl, double ll,

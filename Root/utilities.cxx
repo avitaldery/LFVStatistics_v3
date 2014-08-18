@@ -1,3 +1,4 @@
+
 #include "TH1.h"
 #include "TCanvas.h"
 #include "TRandom.h"
@@ -22,6 +23,22 @@
 
 namespace utilities{
 
+
+TH1D* FindME(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* f=NULL;
+    if( 1){ f = new TFile(PATH+"LFV."+temp+".root");}
+//    if( Jets==1 ){ f = new TFile(PATH+"LFV_1jet."+temp+".root");}
+
+    if (f == NULL){return NULL;}
+    TH1D* h_ME =(TH1D*)f->Get(HISTO_NAME_ME);
+    if (h_ME==NULL){cout<<"NULL histo"<<endl;}
+    return h_ME;
+}
+
 TH1D* FindME(double l0, double l1, double Metl, double ll, int Jets)
 {
     char temp[50];
@@ -32,10 +49,25 @@ TH1D* FindME(double l0, double l1, double Metl, double ll, int Jets)
     if( Jets==1 ){ f = new TFile(PATH+"LFV_1jet."+temp+".root");}
 
     if (f == NULL){return NULL;}
-    TH1D* h_ME =(TH1D*)f->Get(HISTO_NAME_ME); // histogram name <----- Change here
+    TH1D* h_ME =(TH1D*)f->Get(HISTO_NAME_ME);
     if (h_ME==NULL){cout<<"NULL histo"<<endl;}
     return h_ME;
 }
+
+TH1D* FindEM(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* f=NULL;
+    if( 1 ){ f = new TFile(PATH+"LFV."+temp+".root");}
+//    if( Jets==1 ){ f = new TFile(PATH+"LFV_1jet."+temp+".root");}
+    if (f == NULL){return NULL;}
+    TH1D* h_EM =(TH1D*)f->Get(HISTO_NAME_EM);
+    if (h_EM==NULL){cout<<"NULL histo"<<endl;}
+    return h_EM;
+}
+
 
 
 TH1D* FindEM(double l0, double l1, double Metl, double ll, int Jets)
@@ -51,6 +83,23 @@ TH1D* FindEM(double l0, double l1, double Metl, double ll, int Jets)
     if (h_EM==NULL){cout<<"NULL histo"<<endl;}
     return h_EM;
 }
+
+TH1D* FindSig(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* fsig=NULL;
+    if( 1 ){ fsig = new TFile(PATH+"HTM_"+temp+".root");}
+//    if( Jets==1 ){ fsig = new TFile(PATH+"HTM_"+temp+".LFV_1jet.root");}
+
+    if (fsig == NULL){return NULL;}
+    TH1D* h_sig =(TH1D*)fsig->Get(HISTO_NAME_ME);
+    if (h_sig==NULL){cout<<"NULL histo"<<endl;}
+
+    return h_sig;
+}
+
 
 TH1D* FindSig(double l0, double l1, double Metl, double ll, int Jets)
 {
@@ -284,6 +333,8 @@ double PrintSideBandProbabilities(TH1D* h_EM,TH1D* h_ME,TH1D* h_B)
 	sigmaSqrEM = sigmaSqrEM/(N);
 	sigmaSqrME = sigmaSqrME/(N);
 
+	double sigma = (sigmaSqrEM > sigmaSqrME ? sigmaSqrEM : sigmaSqrME);
+
 	double maxSig = maxSigEM > maxSigME ? maxSigEM : maxSigME;
 	int maxBin = maxSigEM > maxSigME ? maxBinEM : maxBinME;
 
@@ -291,7 +342,7 @@ double PrintSideBandProbabilities(TH1D* h_EM,TH1D* h_ME,TH1D* h_B)
 	cout<<"sigma ME = "<<sqrt(sigmaSqrME)<<endl;
 	cout<<"maximum single bin deviation = "<<maxSig<<" in bin "<<maxBin<<endl;
 
-	return maxSig;
+	return sigma;
 }
 
 

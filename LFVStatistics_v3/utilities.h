@@ -12,6 +12,10 @@
 
 namespace utilities{
 
+TH1D* FindME(double l0, double l1, double Metl, double ll, double delPt, double Metl0);
+TH1D* FindEM(double l0, double l1, double Metl, double ll, double delPt, double Metl0);
+TH1D* FindSig(double l0, double l1, double Metl, double ll, double delPt, double Metl0);
+
 TH1D* FindME(double l0, double l1, double Metl, double ll, int Jets);
 TH1D* FindEM(double l0, double l1, double Metl, double ll, int Jets);
 TH1D* FindSig(double l0, double l1, double Metl, double ll, int Jets);

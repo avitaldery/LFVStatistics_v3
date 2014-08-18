@@ -62,6 +62,40 @@ void Sens_discovery(TString datafile, TString signalfile)
 }
 
 
+void Sens_discovery(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+	InitExterns();
+	//get base data
+	Data d(l0,l1,Metl,ll,delPt,Metl0);
+
+	TH1D* h_b = Likelihood::GetBGEstimation(d);
+
+	double sigma = utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
+
+	double muMax = 10;
+	int numMC = 10000; int numbins = 100;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+
+	for (int i=0; i<numMC; i++)
+	{
+		if (i % (numMC/10) == 0){ cout << i*(100./numMC) << "%-" << flush;}
+		Data dRand;
+		dRand = Toys::ToyData(d,h_b);
+		double mu = minimization::GetMuSensitivity_discovery(dRand);
+		h_sens->Fill(mu,1./numMC);
+		dRand.free();
+	}
+
+	// write to file
+	char temp1[50];
+	sprintf(temp1,",{ %2.0f , %2.0f , %1.1f , %1.1f , %1.1f , %1.1f , %1.1f ,",l0,l1,Metl,ll,delPt,Metl0,sigma);
+	std::ofstream SensFile;
+	SensFile.open ("SensFile.txt",ios_base::app);
+	SensFile << temp1 ; SensFile.close();
+	// draw brazil plot
+	utilities::drawSensitivity(h_sens,"SensFile.txt",numbins,muMax);
+}
+
 
 void Sens_discovery(double l0, double l1, double Metl, double ll, int Jets)
 {

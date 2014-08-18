@@ -69,6 +69,30 @@ Data::Data(TH1D* hEM, TH1D* hME, TH1D* hsig, int minBin, int maxBin)
 	setMuHat();
 }
 
+Data::Data(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+	m_numSR = 1;
+	TH1D* h_EM  = utilities::FindEM(l0,l1,Metl,ll,delPt,Metl0);
+	TH1D* h_ME = utilities::FindME(l0,l1,Metl,ll,delPt,Metl0);
+	TH1D* h_sig = utilities::FindSig(l0,l1,Metl,ll,delPt,Metl0);
+
+	setEM(h_EM);
+	setME(h_ME);
+	setSig(h_sig);
+	setEM2(NULL);
+	setME2(NULL);
+	m_nbins = m_numSR*(h_EM->GetXaxis()->GetNbins());
+	m_minBin = 1;
+	m_maxBin = m_nbins;
+	setN();
+	setM();
+	setS();
+	setBins();
+	m_muHat = 0;
+	setBlindHistos();
+	setMuHat();
+}
+
 
 Data::Data(double l0, double l1, double Metl, double ll, int Jets)
 {

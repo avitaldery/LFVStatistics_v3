@@ -21,12 +21,12 @@ using namespace minimization;
 void L2_pValues(double l0, double l1, double Metl, double ll, int Jets)
 {
 	InitExterns();
-//	RAND.SetSeed(3);
+	RAND.SetSeed(8731);
 
 	Data d(l0,l1,Metl,ll,Jets);
 //	TH1D* h_b = Likelihood::GetBGEstimation(d);
 	TH1D* h_pValues = new TH1D("L2 pvalues","L2 pvalues",22,0,1.1);
-	int numMC = 1000;
+	int numMC = 200;
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -57,7 +57,7 @@ void L2_pValues(double l0, double l1, double Metl, double ll, int Jets)
 	}
 
 	h_pValues->Draw();
-	TFile* file = new TFile("f1000_2.root","RECREATE");
+	TFile* file = new TFile("fL2_8.root","RECREATE");
 	h_pValues->Write("L2_pValues");
 	file->Close();
 }

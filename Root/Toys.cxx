@@ -34,7 +34,6 @@ Data ToyData(Data d, TH1D* h_b)
 	TH1D* hEM = drawFromHisto2(h_b,"toyEM");
 	TH1D* hME = drawFromHisto2(h_b,"toyME");
 	Data newd(hEM,hME,d.m_hsig);
-	cout<< "bla4" << endl;
 	return newd;
 }
 

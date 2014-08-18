@@ -51,7 +51,7 @@ double getB(double n,double m,double S,double mu)
 
 
 double LogL(Data d,double mu)
-//for L3 Discovery
+//for L3
 {
 	double l=0;
 	for (int i=d.m_minBin-1; i<d.m_maxBin; i++){
@@ -72,7 +72,7 @@ double LogL(Data d,double mu)
 }
 
 double LogL_B(Data d,double* muHat_B)
-// for L3 Discovery
+// for L3
 {
 	double l=0;
 	for (int i=d.m_minBin-1; i<d.m_maxBin; i++){
