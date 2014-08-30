@@ -12,7 +12,9 @@ namespace minimization{
 
 double GetMuHat(Data d);
 void GetMuHat_B(Data d, double* muHat_B, double* Errors);
+void GetMuHat_Poly(Data d, double* muHat_poly, double* Errors);
 void Lminim(int &npar, double *gin, double &f, double *par, int iflag); //function for GetMuHat
+void Lminim_poly(int &npar, double *gin, double &f, double *par, int iflag);
 void Lminim_B(int &npar, double *gin, double &f, double *par, int iflag);
 
 double GetMuSensitivity_discovery(Data d);

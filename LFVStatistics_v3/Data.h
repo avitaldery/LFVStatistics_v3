@@ -11,7 +11,7 @@ class Data	: public TObject
 public:
 	//CONSTRUCTORS
 	//default constructor (sets muHat to ZERO)
-	Data(): m_hEM(NULL), m_hME(NULL), m_hsig(NULL), m_hEMblind(NULL), m_hMEblind(NULL), m_SR2_hEM(NULL),
+	Data(): m_hEM(NULL), m_hME(NULL), m_hsig(NULL),  m_hEMblind(NULL), m_hMEblind(NULL), m_SR2_hEM(NULL),
 		m_SR2_hME(NULL), m_Bins(NULL), m_muHat(0) {}
 //	~Data();
 	Data(TH1D* h1,TH1D* h2,TH1D* hsig);
@@ -24,12 +24,18 @@ public:
 	Data(double l0, double l1, double Metl, double ll);
 	Data(double l0, double l1, double Metl, double ll,
 			double l0_2, double l1_2, double Metl_2, double ll_2);
+	Data(double l0, double l1, double Metl, double ll, double delPt, double Metl0,
+				double l0_2, double l1_2, double Metl_2, double ll_2, double delPt_2, double Metl0_2);
 	Data(double l0, double l1, double Metl, double ll,int Jets,
 				double l0_2, double l1_2, double Metl_2, double ll_2,int Jets_2);
 	void setEM(TH1D* hEM){ m_hEM = hEM; m_hEM->SetLineColor(kGreen+2);}
 	void setME(TH1D* hME){ m_hME = hME; m_hME->SetLineColor(kBlue);}
 	void setEMBlind(TH1D* hEMblind){ m_hEMblind = hEMblind;}
 	void setMEBlind(TH1D* hMEblind){ m_hMEblind = hMEblind;}
+//	void setSigHTM(TH1D* hsigHTM){m_hsigHTM = hsigHTM;}
+//	void setSigHTE(TH1D* hsigHTE){m_hsigHTE = hsigHTE;}
+//	void setSigHTM_EM(TH1D* hsigHTMEM){m_hsigHTM_EM = hsigHTMEM;}
+//	void setSigHTE_ME(TH1D* hsigHTEME){m_hsigHTE_ME = hsigHTEME;}
 	void setSig(TH1D* hsig){ m_hsig = hsig;}
 	void setEM(TH1D* hEM1, TH1D* hEM2);
 	void setME(TH1D* hME1, TH1D* hME2);
@@ -75,6 +81,10 @@ private:
 	TH1D* m_hME;
 	//TODO: make the object hold two signal histos and use them accordingly
 	TH1D* m_hsig;
+//	TH1D* m_hsigHTM;
+//	TH1D* m_hsigHTE;
+//	TH1D* m_hsigHTM_EM;
+//	TH1D* m_hsigHTE_ME;
 	TH1D* m_hEMblind;
 	TH1D* m_hMEblind;
 	TH1D* m_SR2_hEM;

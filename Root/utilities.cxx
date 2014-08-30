@@ -30,7 +30,7 @@ TH1D* FindME(double l0, double l1, double Metl, double ll, double delPt, double 
     sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
 
     TFile* f=NULL;
-    if( 1){ f = new TFile(PATH+"LFV."+temp+".root");}
+    if( 1){ f = new TFile(PATHnoJets+"AllData/SR_noJets."+temp+".root");}
 //    if( Jets==1 ){ f = new TFile(PATH+"LFV_1jet."+temp+".root");}
 
     if (f == NULL){return NULL;}
@@ -54,13 +54,61 @@ TH1D* FindME(double l0, double l1, double Metl, double ll, int Jets)
     return h_ME;
 }
 
+TH1D* FindME(double l0, double l1, double Metl, double ll, double delPt, double Metl0, int Jets)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* f=NULL;
+    if( Jets==0 ){ f = new TFile(PATHnoJets+"AllData/SR_noJets."+temp+".root");}
+    if( Jets==1 ){ f = new TFile(PATHwithJets+"AllData/SR_withJets."+temp+".root");}
+
+    if (f == NULL){return NULL;}
+    TH1D* h_ME =(TH1D*)f->Get(HISTO_NAME_ME);
+    if (h_ME==NULL){cout<<"NULL histo"<<endl;}
+    return h_ME;
+}
+
+TH1D* FindEM(double l0, double l1, double Metl, double ll, double delPt, double Metl0, int Jets)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* f=NULL;
+    if( Jets==0 ){ f = new TFile(PATHnoJets+"AllData/SR_noJets."+temp+".root");}
+    if( Jets==1 ){ f = new TFile(PATHwithJets+"AllData/SR_withJets."+temp+".root");}
+
+    if (f == NULL){return NULL;}
+    TH1D* h_ME =(TH1D*)f->Get(HISTO_NAME_EM);
+    if (h_ME==NULL){cout<<"NULL histo"<<endl;}
+    return h_ME;
+}
+
+
+TH1D* FindSig(double l0, double l1, double Metl, double ll, double delPt, double Metl0, int Jets)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* fsig=NULL;
+    if( Jets==0 ){ fsig = new TFile(PATHnoJets+"Signal/HTM_"+temp+".SR_noJets.AnaHists.root");}
+    if( Jets==1 ){ fsig = new TFile(PATHwithJets+"Signal/HTM_"+temp+".SR_withJets.AnaHists.root");}
+
+    if (fsig == NULL){return NULL;}
+    TH1D* h_sig =(TH1D*)fsig->Get(HISTO_NAME_ME);
+    if (h_sig==NULL){cout<<"NULL histo"<<endl;}
+
+    return h_sig;
+}
+
+
 TH1D* FindEM(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
 {
     char temp[50];
     sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
 
     TFile* f=NULL;
-    if( 1 ){ f = new TFile(PATH+"LFV."+temp+".root");}
+    if( 1 ){ f = new TFile(PATH+"AllData/SR_noJets."+temp+".root");}
 //    if( Jets==1 ){ f = new TFile(PATH+"LFV_1jet."+temp+".root");}
     if (f == NULL){return NULL;}
     TH1D* h_EM =(TH1D*)f->Get(HISTO_NAME_EM);
@@ -90,7 +138,88 @@ TH1D* FindSig(double l0, double l1, double Metl, double ll, double delPt, double
     sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
 
     TFile* fsig=NULL;
-    if( 1 ){ fsig = new TFile(PATH+"HTM_"+temp+".root");}
+    if( 1 ){ fsig = new TFile(PATH+"Signal/HTM_"+temp+".SR_noJets.AnaHists.root");}
+//    if( Jets==1 ){ fsig = new TFile(PATH+"HTM_"+temp+".LFV_1jet.root");}
+
+    if (fsig == NULL){return NULL;}
+    TH1D* h_sig =(TH1D*)fsig->Get(HISTO_NAME_ME);
+    if (h_sig==NULL){cout<<"NULL histo"<<endl;}
+
+    return h_sig;
+}
+
+TH1D* FindWrongSig(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* fsig=NULL;
+    if( 1 ){ fsig = new TFile(PATH+"Signal/HTM_"+temp+".SR_noJets.AnaHists.root");}
+//    if( Jets==1 ){ fsig = new TFile(PATH+"HTM_"+temp+".LFV_1jet.root");}
+
+    if (fsig == NULL){return NULL;}
+    TH1D* h_sig =(TH1D*)fsig->Get(HISTO_NAME_EM);
+    if (h_sig==NULL){cout<<"NULL histo"<<endl;}
+
+    return h_sig;
+}
+
+
+TH1D* FindSig_HTM(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* fsig=NULL;
+    if( 1 ){ fsig = new TFile(PATH+"Signal/HTM_"+temp+".SR_withJets.AnaHists.root");}
+//    if( Jets==1 ){ fsig = new TFile(PATH+"HTM_"+temp+".LFV_1jet.root");}
+
+    if (fsig == NULL){return NULL;}
+    TH1D* h_sig =(TH1D*)fsig->Get(HISTO_NAME_ME);
+    if (h_sig==NULL){cout<<"NULL histo"<<endl;}
+
+    return h_sig;
+}
+
+TH1D* FindSig_HTM_EM(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* fsig=NULL;
+    if( 1 ){ fsig = new TFile(PATH+"Signal/HTM_"+temp+".SR_withJets.AnaHists.root");}
+//    if( Jets==1 ){ fsig = new TFile(PATH+"HTM_"+temp+".LFV_1jet.root");}
+
+    if (fsig == NULL){return NULL;}
+    TH1D* h_sig =(TH1D*)fsig->Get(HISTO_NAME_EM);
+    if (h_sig==NULL){cout<<"NULL histo"<<endl;}
+
+    return h_sig;
+}
+
+TH1D* FindSig_HTE(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* fsig=NULL;
+    if( 1 ){ fsig = new TFile(PATH+"Signal/HTE_"+temp+".SR_withJets.AnaHists.root");}
+//    if( Jets==1 ){ fsig = new TFile(PATH+"HTM_"+temp+".LFV_1jet.root");}
+
+    if (fsig == NULL){return NULL;}
+    TH1D* h_sig =(TH1D*)fsig->Get(HISTO_NAME_EM);
+    if (h_sig==NULL){cout<<"NULL histo"<<endl;}
+
+    return h_sig;
+}
+
+TH1D* FindSig_HTE_ME(double l0, double l1, double Metl, double ll, double delPt, double Metl0)
+{
+    char temp[50];
+    sprintf(temp,"%2.0f_%2.0f_%1.1f_%1.1f_%1.1f_%1.1f",l0,l1,Metl,ll,delPt,Metl0);
+
+    TFile* fsig=NULL;
+    if( 1 ){ fsig = new TFile(PATH+"Signal/HTE_"+temp+".SR_withJets.AnaHists.root");}
 //    if( Jets==1 ){ fsig = new TFile(PATH+"HTM_"+temp+".LFV_1jet.root");}
 
     if (fsig == NULL){return NULL;}
@@ -116,6 +245,7 @@ TH1D* FindSig(double l0, double l1, double Metl, double ll, int Jets)
 
     return h_sig;
 }
+
 
 
 void setBErrors(Data d,TH1D* h_b)
@@ -178,7 +308,7 @@ void drawSensitivity(TH1D* h_vanilla,TString filename,int nbins,double maxMu)
 	h_vanilla->GetQuantiles(1,&quantile_2sigma,&prob4);
 	h_vanilla->GetQuantiles(1,&quantile_2sigma2,&prob5);
 
-	TH1D* h_green = new TH1D("greenquantile","greenquantile",nbins,0,maxMu);
+	TH1D* h_green = new TH1D("greenquantile","greenquantile",nbins,-maxMu,maxMu);
 	int bin_med = h_green->GetXaxis()->FindBin(quantile);
 	int bin_1sig = h_green->GetXaxis()->FindBin(quantile_1sigma);
 
@@ -188,7 +318,7 @@ void drawSensitivity(TH1D* h_vanilla,TString filename,int nbins,double maxMu)
 	h_green->SetFillColor(kGreen);
 	h_green->Draw("sames");
 
-	TH1D* h_green2 = new TH1D("greenquantile2","greenquantile2",nbins,0,maxMu);
+	TH1D* h_green2 = new TH1D("greenquantile2","greenquantile2",nbins,-maxMu,maxMu);
 	int bin_1sig2 = h_green2->GetXaxis()->FindBin(quantile_1sigma2);
 
 	for (int k=bin_1sig2;k<=bin_med;k++){
@@ -196,7 +326,7 @@ void drawSensitivity(TH1D* h_vanilla,TString filename,int nbins,double maxMu)
 	}
 	h_green2->SetFillColor(kGreen);
 	h_green2->Draw("sames");
-	TH1D* h_yellow = new TH1D("yellowquantile","yellowquantile",nbins,0,maxMu);
+	TH1D* h_yellow = new TH1D("yellowquantile","yellowquantile",nbins,-maxMu,maxMu);
 	int bin_2sig = h_yellow->GetXaxis()->FindBin(quantile_2sigma);
 
 	for (int k=bin_1sig;k<=bin_2sig;k++){
@@ -204,7 +334,7 @@ void drawSensitivity(TH1D* h_vanilla,TString filename,int nbins,double maxMu)
 	}
 	h_yellow->SetFillColor(kYellow);
 	h_yellow->Draw("sames");
-	TH1D* h_yellow2 = new TH1D("yellowquantile2","yellowquantile2",nbins,0,maxMu);
+	TH1D* h_yellow2 = new TH1D("yellowquantile2","yellowquantile2",nbins,-maxMu,maxMu);
 	int bin_2sig2 = h_yellow2->GetXaxis()->FindBin(quantile_2sigma2);
 
 	for (int k=bin_2sig2;k<=bin_1sig2;k++){
@@ -214,6 +344,7 @@ void drawSensitivity(TH1D* h_vanilla,TString filename,int nbins,double maxMu)
 	h_yellow2->Draw("sames");
 
 	//print values
+	cout<<"Sensitivity values: " <<endl;
 	cout<<"median value = "<<quantile<<endl;
 	cout<<"1sigma values = "<<quantile_1sigma2<<", "<<quantile_1sigma<<endl;
 	cout<<"2sigma values = "<<quantile_2sigma2<<", "<<quantile_2sigma<<endl;
@@ -242,7 +373,7 @@ void drawSensitivity(TH1D* h_vanilla,int nbins,double maxMu)
 	h_vanilla->GetQuantiles(1,&quantile_2sigma,&prob4);
 	h_vanilla->GetQuantiles(1,&quantile_2sigma2,&prob5);
 
-	TH1D* h_green = new TH1D("greenquantile","greenquantile",nbins,0,maxMu);
+	TH1D* h_green = new TH1D("greenquantile","greenquantile",nbins,-maxMu,maxMu);
 	int bin_med = h_green->GetXaxis()->FindBin(quantile);
 	int bin_1sig = h_green->GetXaxis()->FindBin(quantile_1sigma);
 
@@ -252,7 +383,7 @@ void drawSensitivity(TH1D* h_vanilla,int nbins,double maxMu)
 	h_green->SetFillColor(kGreen);
 	h_green->Draw("sames");
 
-	TH1D* h_green2 = new TH1D("greenquantile2","greenquantile2",nbins,0,maxMu);
+	TH1D* h_green2 = new TH1D("greenquantile2","greenquantile2",nbins,-maxMu,maxMu);
 	int bin_1sig2 = h_green2->GetXaxis()->FindBin(quantile_1sigma2);
 
 	for (int k=bin_1sig2;k<=bin_med;k++){
@@ -260,7 +391,7 @@ void drawSensitivity(TH1D* h_vanilla,int nbins,double maxMu)
 	}
 	h_green2->SetFillColor(kGreen);
 	h_green2->Draw("sames");
-	TH1D* h_yellow = new TH1D("yellowquantile","yellowquantile",nbins,0,maxMu);
+	TH1D* h_yellow = new TH1D("yellowquantile","yellowquantile",nbins,-maxMu,maxMu);
 	int bin_2sig = h_yellow->GetXaxis()->FindBin(quantile_2sigma);
 
 	for (int k=bin_1sig;k<=bin_2sig;k++){
@@ -268,7 +399,7 @@ void drawSensitivity(TH1D* h_vanilla,int nbins,double maxMu)
 	}
 	h_yellow->SetFillColor(kYellow);
 	h_yellow->Draw("sames");
-	TH1D* h_yellow2 = new TH1D("yellowquantile2","yellowquantile2",nbins,0,maxMu);
+	TH1D* h_yellow2 = new TH1D("yellowquantile2","yellowquantile2",nbins,-maxMu,maxMu);
 	int bin_2sig2 = h_yellow2->GetXaxis()->FindBin(quantile_2sigma2);
 
 	for (int k=bin_2sig2;k<=bin_1sig2;k++){
@@ -333,11 +464,12 @@ double PrintSideBandProbabilities(TH1D* h_EM,TH1D* h_ME,TH1D* h_B)
 	sigmaSqrEM = sigmaSqrEM/(N);
 	sigmaSqrME = sigmaSqrME/(N);
 
-	double sigma = (sigmaSqrEM > sigmaSqrME ? sigmaSqrEM : sigmaSqrME);
+	double sigma = (sigmaSqrEM > sigmaSqrME ? sqrt(sigmaSqrEM) : sqrt(sigmaSqrME));
 
 	double maxSig = maxSigEM > maxSigME ? maxSigEM : maxSigME;
 	int maxBin = maxSigEM > maxSigME ? maxBinEM : maxBinME;
 
+	cout<<"Asymmetry Chi^2:"<<endl;
 	cout<<"sigma EM = "<<sqrt(sigmaSqrEM)<<endl;
 	cout<<"sigma ME = "<<sqrt(sigmaSqrME)<<endl;
 	cout<<"maximum single bin deviation = "<<maxSig<<" in bin "<<maxBin<<endl;
@@ -345,5 +477,38 @@ double PrintSideBandProbabilities(TH1D* h_EM,TH1D* h_ME,TH1D* h_B)
 	return sigma;
 }
 
+
+void drawPoly(double* param, double* bins, int nbins)
+{
+	TH1D* hpoly = new TH1D("poly","poly",nbins,bins);
+	for (int i=1; i<=nbins; i++){
+		double x2 = bins[i];
+		double x1 = bins[i-1];
+		double a = param[0];
+		double f = (param[1]/(a+1))*(TMath::Power(x2,a+1)-TMath::Power(x1,a+1))+
+				param[2]*(x2-x1) +
+				(param[3]/2)*(TMath::Power(x2,2)-TMath::Power(x1,2))+
+				(param[4]/3)*(TMath::Power(x2,3)-TMath::Power(x1,3));
+		hpoly->SetBinContent(i,f);
+	}
+	hpoly->DrawClone();
+	delete hpoly;
+}
+
+TH1D* getPoly(double* param, double* bins, int nbins)
+{
+	TH1D* hpoly = new TH1D("poly","poly",nbins,bins);
+	for (int i=1; i<=nbins; i++){
+		double x2 = bins[i];
+		double x1 = bins[i-1];
+		double a = param[0];
+		double f = (param[1]/(a+1))*(TMath::Power(x2,a+1)-TMath::Power(x1,a+1))+
+				param[2]*(x2-x1) +
+				(param[3]/2)*(TMath::Power(x2,2)-TMath::Power(x1,2))+
+				(param[4]/3)*(TMath::Power(x2,3)-TMath::Power(x1,3));
+		hpoly->SetBinContent(i,f);
+	}
+	return hpoly;
+}
 
 }

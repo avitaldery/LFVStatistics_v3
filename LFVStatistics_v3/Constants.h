@@ -11,6 +11,8 @@ using namespace std;
 
 //path for root files directory
 extern TString PATH;
+extern TString PATHnoJets;
+extern TString PATHwithJets;
 extern TString HISTO_NAME_ME;
 extern TString HISTO_NAME_EM;
 

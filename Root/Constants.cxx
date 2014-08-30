@@ -6,6 +6,8 @@
 
 
 TString PATH;
+TString PATHnoJets;
+TString PATHwithJets;
 TString HISTO_NAME_ME;
 TString HISTO_NAME_EM;
 
@@ -36,9 +38,12 @@ unsigned int SEED;
 void InitExterns()
 {
 	//path for root files and histogram names - CHANGE HERE
-	PATH = "../../CutFlowOptimization/14_07_27/LFV/AllData/";
-	HISTO_NAME_ME = "nom/ME_noS_McollHiggs_Unblind";
-	HISTO_NAME_EM = "nom/EM_noS_McollHiggs_Unblind";
+	PATH = "../../CutFlowOptimization/14_08_18_20GeVJets/SR_noJets/";
+	PATHnoJets = "../../CutFlowOptimization/14_08_18_20GeVJets/SR_noJets/";
+	PATHwithJets = "../../CutFlowOptimization/14_08_18_20GeVJets/SR_withJets/";
+
+	HISTO_NAME_ME = "nom/ME_MMC_Unblind";//McollHiggs_Unblind";
+	HISTO_NAME_EM = "nom/EM_MMC_Unblind";//McollHiggs_Unblind";
 	//see functions FindEM etc. in utilities.cxx for the complete format
 
 	COLL_MASS_MIN = 0;

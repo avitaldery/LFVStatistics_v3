@@ -39,8 +39,8 @@ void Sens_discovery(TString datafile, TString signalfile)
 	utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
 
 	double muMax = 10;
-	int numMC = 10000; int numbins = 100;
-	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+	int numMC = 2000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -73,8 +73,8 @@ void Sens_discovery(double l0, double l1, double Metl, double ll, double delPt, 
 	double sigma = utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
 
 	double muMax = 10;
-	int numMC = 10000; int numbins = 100;
-	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+	int numMC = 2000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -88,7 +88,7 @@ void Sens_discovery(double l0, double l1, double Metl, double ll, double delPt, 
 
 	// write to file
 	char temp1[50];
-	sprintf(temp1,",{ %2.0f , %2.0f , %1.1f , %1.1f , %1.1f , %1.1f , %1.1f ,",l0,l1,Metl,ll,delPt,Metl0,sigma);
+	sprintf(temp1,",{ %2.0f , %2.0f , %1.1f , %1.1f , %1.1f , %1.1f , %4.2f ,",l0,l1,Metl,ll,delPt,Metl0,sigma);
 	std::ofstream SensFile;
 	SensFile.open ("SensFile.txt",ios_base::app);
 	SensFile << temp1 ; SensFile.close();
@@ -108,8 +108,8 @@ void Sens_discovery(double l0, double l1, double Metl, double ll, int Jets)
 	utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
 
 	double muMax = 10;
-	int numMC = 10000; int numbins = 100;
-	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+	int numMC = 10000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -145,8 +145,8 @@ void Sens_discovery(double l0, double l1, double Metl, double ll)
 	utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
 
 	double muMax = 10;
-	int numMC = 10000; int numbins = 100;
-	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+	int numMC = 10000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -184,8 +184,8 @@ void Sens_discovery(double l0, double l1, double Metl, double ll,
 	utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
 
 	double muMax = 10;
-	int numMC = 10000; int numbins = 100;
-	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+	int numMC = 10000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -209,6 +209,45 @@ void Sens_discovery(double l0, double l1, double Metl, double ll,
 
 }
 
+void Sens_discovery(double l0, double l1, double Metl, double ll, double delPt, double Metl0,
+		double l0_2,double l1_2, double Metl_2, double ll_2, double delPt_2, double Metl0_2)
+{
+	InitExterns();
+	//get base data
+	Data d(l0,l1,Metl,ll,delPt,Metl0,l0_2,l1_2,Metl_2,ll_2,delPt_2,Metl0_2);
+
+	TH1D* h_b;
+	h_b= Likelihood::GetBGEstimation(d);
+
+	utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
+
+	double muMax = 10;
+	int numMC = 2000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
+
+	for (int i=0; i<numMC; i++)
+	{
+		//		cout<<"event # "<< i <<endl;
+		if (i % (numMC/10) == 0){ cout << i*(100./numMC) << "%-" << flush;}
+		Data dRand;
+		dRand = Toys::ToyData(d,h_b);
+		double mu = minimization::GetMuSensitivity_discovery(dRand);
+		h_sens->Fill(mu,1./numMC);
+		dRand.free();
+	}
+
+	// write to file
+	char temp1[50];
+	sprintf(temp1,",{ %2.0f , %2.0f , %1.1f , %1.1f , ",l0,l1,Metl,ll);
+	std::ofstream SensFile;
+	SensFile.open ("SensFile.txt",ios_base::app);
+	SensFile << temp1 ; SensFile.close();
+	// draw brazil plot
+	utilities::drawSensitivity(h_sens,"SensFile.txt",numbins,muMax);
+
+}
+
+
 void Sens_discovery(double l0, double l1, double Metl, double ll,int Jets,
 		double l0_2,double l1_2, double Metl_2, double ll_2,int Jets_2)
 {
@@ -222,8 +261,8 @@ void Sens_discovery(double l0, double l1, double Metl, double ll,int Jets,
 	utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
 
 	double muMax = 10;
-	int numMC = 10000; int numbins = 100;
-	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+	int numMC = 10000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
 
 	for (int i=0; i<numMC; i++)
 	{
@@ -259,8 +298,8 @@ void Sens_discovery(TH1D* hEM, TH1D* hME, TH1D* hSig)
 	utilities::PrintSideBandProbabilities(d.m_hEM,d.m_hME,h_b);
 
 	double muMax = 10;
-	int numMC = 10000; int numbins = 100;
-	TH1D* h_sens = new TH1D("sens","sens",numbins,0,muMax);
+	int numMC = 10000; int numbins = 200;
+	TH1D* h_sens = new TH1D("sens","sens",numbins,-muMax,muMax);
 
 	for (int i=0; i<numMC; i++)
 	{

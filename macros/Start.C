@@ -28,28 +28,37 @@ void Start(double l0, double l1, double Metl, double ll)
 //	d.DrawEMME();
 //	d.m_hsig->Draw("sames");
 
-	double muHatB[d.m_nbins+1];
-	double errors[d.m_nbins+1];
-	minimization::GetMuHat_B(d,muHatB,errors);
+	double muHatpoly[d.m_nbins+6];
+	double errors[d.m_nbins+6];
+	minimization::GetMuHat_Poly(d,muHatpoly,errors);
 
-	TH1D* h_b = new TH1D("b","b",d.m_nbins,d.m_Bins);
-	for (int i=1; i<=d.m_nbins; i++)
-	{
-		h_b->SetBinContent(i,muHatB[i]);
-	}
+	cout << "a = " << muHatpoly[1] << endl;
+	cout << "Ca = " << muHatpoly[2] << endl;
+	cout << "C0 = " << muHatpoly[3] << endl;
+	cout << "C1 = " << muHatpoly[4] << endl;
+	cout << "C2 = " << muHatpoly[5] << endl;
 
-	TH1D* h_b_analytic = Likelihood::GetBGEstimation(d);
-	h_b->Draw();
-	h_b_analytic->SetLineColor(kRed); h_b_analytic->Draw("sames");
+	TH1D* h_f = utilities::getPoly(&muHatpoly[1],d.m_Bins,d.m_nbins);
+
+	TH1D* h_b = Likelihood::GetBGEstimation(d,&muHatpoly[1]);
+	d.DrawEMME();
+	h_b->Draw("sames");
+	TH1D* h_b_plusf = (TH1D*)h_b->Clone("hb_plus");
+	TH1D* h_b_minusf = (TH1D*)h_b->Clone("hb_minus");
+	h_b_plusf->Add(h_f);
+	h_b_minusf->Add(h_f,-1);
+	h_b_plusf->Draw("sames");h_b_minusf->Draw("sames");
+
+//	h_b_analytic->SetLineColor(kRed); h_b_analytic->Draw("sames");
 
 
-	Data d1(l0,l1,Metl,ll,1);
+//	Data d1(l0,l1,Metl,ll,1);
 //	TCanvas* c2 = new TCanvas("c2","c2",600,600); c2 = c2;
 //	d1.DrawEMME();
 //	d1.m_hsig->Draw("sames");
 
 
-	Data d2(l0,l1,Metl,ll);
+//	Data d2(l0,l1,Metl,ll);
 //	TCanvas* c3 = new TCanvas("c3","c3",600,600); c3 = c3;
 //	d2.DrawEMME();
 //	d2.m_hsig->Draw("sames");

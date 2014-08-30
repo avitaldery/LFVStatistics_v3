@@ -51,6 +51,16 @@ void Lminim_B(int &npar, double *gin, double &f, double *par, int iflag)
 	f = l;
 }
 
+void Lminim_poly(int &npar, double *gin, double &f, double *par, int iflag)
+{
+	// par[0] is muHat
+	// par[1-5] are a, Ca, C0, C1, C2 of the polynomial
+	npar = npar; gin = gin; iflag = iflag;
+	Data *data = (Data*)gMinuit->GetObjectFit();
+	double l = Likelihood::LogL_poly(*data,par);
+	f = l;
+}
+
 void ThreeSig(int &npar, double *gin, double &f, double *par, int iflag)
 {
 	//par[0] is mu
@@ -119,7 +129,6 @@ void GetMuHat_B(Data d, double* muHat_B, double* Errors)
 		double maxV = (d.m_n[j-1] < d.m_m[j-1] ? d.m_m[j-1] : d.m_n[j-1]);
 		if (minV == maxV){maxV = maxV+1;}
 		double startV = (minV+maxV)/2.;
-//		cout << "n = " << d.m_n[j-1] << ", m = " << d.m_m[j-1] << ", startV = " << startV << endl;
 		gMinuit->mnparm(j,varname,startV,0.0001,minV,maxV,ierflg);
 	}
 
@@ -128,7 +137,37 @@ void GetMuHat_B(Data d, double* muHat_B, double* Errors)
 
 	for (int i=0; i<=d.m_nbins; i++){
 		gMinuit->GetParameter(i,muHat_B[i],Errors[i]);
-//		cout << "GetMuHat_B:: muHat_B[i] = " << muHat_B[i] << endl;
+	}
+
+	delete gMinuit;
+
+}
+
+void GetMuHat_Poly(Data d, double* muHat_poly, double* Errors)
+{
+
+	TMinuit *gMinuit = new TMinuit(6);
+	gMinuit->SetObjectFit(&d);
+	gMinuit->SetFCN(Lminim_poly);
+
+	Int_t ierflg = 0; gMinuit->SetPrintLevel(-1);
+	// initialize the parameters:
+	gMinuit->mnparm(0,"muHat",0,0.0001,-10,10,ierflg);
+	gMinuit->mnparm(1,"a",0,0.0001,-0.99,0,ierflg);
+	gMinuit->mnparm(2,"Ca",0,0.0001,-10,10,ierflg);
+
+	TString varname;
+
+	for (int j=3;j<=5;j++){
+		varname.Form("C%d",j-3);
+		gMinuit->mnparm(j,varname,0,0.0001,-10,10,ierflg);
+	}
+
+	gMinuit->SetMaxIterations(500);
+	gMinuit->Migrad();
+
+	for (int i=0; i<=5; i++){
+		gMinuit->GetParameter(i,muHat_poly[i],Errors[i]);
 	}
 
 	delete gMinuit;
@@ -147,7 +186,7 @@ double GetMuSensitivity_discovery(Data d)
 	Int_t ierflg = 0; gMinuit->SetPrintLevel(-1);
 	// initialize the parameters:
 	double startValue;
-	if (d.m_muHat<0){startValue = 0.01;}
+	if (d.m_muHat<0){startValue = d.m_muHat+0.01;}
 	else {startValue = d.m_muHat+0.01;}
 	gMinuit->mnparm(0,"mu",startValue,0.01,startValue,10,ierflg);
 	gMinuit->SetMaxIterations(500);

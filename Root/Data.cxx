@@ -34,6 +34,8 @@ Data::Data(TH1D* hEM, TH1D* hME, TH1D* hsig)
 	setEM(hEM);
 	setME(hME);
 	setSig(hsig);
+//	setSigHTM(hsig);
+//	setSigHTE(hsig);
 	setEM2(NULL);
 	setME2(NULL);
 	m_nbins = m_numSR*(hEM->GetXaxis()->GetNbins());
@@ -55,6 +57,8 @@ Data::Data(TH1D* hEM, TH1D* hME, TH1D* hsig, int minBin, int maxBin)
 	setEM(hEM);
 	setME(hME);
 	setSig(hsig);
+//	setSigHTM(hsig);
+//	setSigHTE(hsig);
 	setEM2(NULL);
 	setME2(NULL);
 	m_nbins = m_numSR*(hEM->GetXaxis()->GetNbins());
@@ -75,10 +79,15 @@ Data::Data(double l0, double l1, double Metl, double ll, double delPt, double Me
 	TH1D* h_EM  = utilities::FindEM(l0,l1,Metl,ll,delPt,Metl0);
 	TH1D* h_ME = utilities::FindME(l0,l1,Metl,ll,delPt,Metl0);
 	TH1D* h_sig = utilities::FindSig(l0,l1,Metl,ll,delPt,Metl0);
+//	TH1D* h_sigHTM = utilities::FindSig_HTM(l0,l1,Metl,ll,delPt,Metl0);
+//	TH1D* h_sigHTE = utilities::FindSig_HTE(l0,l1,Metl,ll,delPt,Metl0);
+
 
 	setEM(h_EM);
 	setME(h_ME);
 	setSig(h_sig);
+//	setSigHTM(h_sigHTM);
+//	setSigHTE(h_sigHTE);
 	setEM2(NULL);
 	setME2(NULL);
 	m_nbins = m_numSR*(h_EM->GetXaxis()->GetNbins());
@@ -185,6 +194,41 @@ Data::Data(double l0, double l1, double Metl, double ll,
 	setMuHat();
 }
 
+Data::Data(double l0, double l1, double Metl, double ll, double delPt, double Metl0,
+				double l0_2, double l1_2, double Metl_2, double ll_2, double delPt_2, double Metl0_2)
+{
+	m_numSR = 2;
+	TH1D* h_EM  = utilities::FindEM(l0,l1,Metl,ll,delPt,Metl0,0);
+	TH1D* h_ME = utilities::FindME(l0,l1,Metl,ll,delPt,Metl0,0);
+	TH1D* h_sig = utilities::FindSig(l0,l1,Metl,ll,delPt,Metl0,0);
+	TH1D* h_EM1  = utilities::FindEM(l0_2,l1_2,Metl_2,ll_2,delPt_2,Metl0_2,1);
+	TH1D* h_ME1 = utilities::FindME(l0_2,l1_2,Metl_2,ll_2,delPt_2,Metl0_2,1);
+	TH1D* h_sig1 = utilities::FindSig(l0_2,l1_2,Metl_2,ll_2,delPt_2,Metl0_2,1);
+
+	setEM(h_EM);
+	setME(h_ME);
+	setEM2(h_EM1);
+	setME2(h_ME1);
+
+	m_nbins = m_numSR*(h_EM->GetXaxis()->GetNbins());
+	setBins();
+
+	setEM(h_EM,h_EM1);
+	setME(h_ME,h_ME1);
+	setSig(h_sig,h_sig1);
+
+	m_minBin = 1;
+	m_maxBin = m_nbins;
+	setN();
+	setM();
+	setS();
+
+	m_muHat = 0;
+	setBlindHistos();
+	setMuHat();
+}
+
+
 Data::Data(double l0, double l1, double Metl, double ll, int Jets,
 		double l0_2, double l1_2, double Metl_2, double ll_2, int Jets_2)
 {
@@ -224,6 +268,8 @@ Data::Data(Data &d)
 	setEM(d.m_hEM);
 	setME(d.m_hME);
 	setSig(d.m_hsig);
+//	setSigHTM(d.m_hsigHTM);
+//	setSigHTE(d.m_hsigHTE);
 	setEMBlind(d.m_hEMblind);
 	setMEBlind(d.m_hMEblind);
 	setEM2(NULL);
@@ -253,6 +299,8 @@ void Data::free()
 	if (m_hMEblind) {delete m_hMEblind;}
 	if (m_SR2_hEM) {delete m_SR2_hEM;}
 	if (m_SR2_hME) {delete m_SR2_hME;}
+//	if (m_hsigHTM) {delete m_hsigHTM;}
+//	if (m_hsigHTE) {delete m_hsigHTE;}
 	delete[] m_Bins;
 	delete[] m_n;
 	delete[] m_m;

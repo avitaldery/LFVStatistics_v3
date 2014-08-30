@@ -35,6 +35,25 @@ TH1D* GetBGEstimation(Data d)
 	return hb;
 }
 
+TH1D* GetBGEstimation(Data d,double* coeff)
+{	//analytic function of n,m,S,muHat,polynomial coeffients
+	delete gDirectory->FindObject("hb");
+	TH1D* hb = new TH1D("hb","hb",d.m_nbins,d.m_Bins);
+	for (int i=1; i<=d.m_nbins; i++){
+		double x2 = d.m_Bins[i];
+		double x1 = d.m_Bins[i-1];
+		double a = coeff[0];
+		double f = (coeff[1]/(a+1))*(TMath::Power(x2,a+1)-TMath::Power(x1,a+1))+
+				coeff[2]*(x2-x1) +
+				(coeff[3]/2)*(TMath::Power(x2,2)-TMath::Power(x1,2))+
+				(coeff[4]/3)*(TMath::Power(x2,3)-TMath::Power(x1,3));
+		double b = getB(d.m_n[i-1],d.m_m[i-1],d.m_S[i-1],d.m_muHat,f);
+		hb->SetBinContent(i,b);
+	}
+	utilities::setBErrors(d,hb);
+	return hb;
+}
+
 double getB(double n,double m,double S,double mu)
 {	//analytic function of n,m,S,muHat per bin
 	double b;
@@ -45,6 +64,20 @@ double getB(double n,double m,double S,double mu)
 	}
 	else{
 		b = (sqrt(TMath::Power(a,2)+8*mu*S*n)+D+2*mu*S)/4;
+	}
+	return b;
+}
+
+double getB(double n,double m,double S,double mu,double f)
+{	//analytic function of n,m,S,muHat, f per bin
+	double b;
+	double D = n+m;
+	double a = D+2*abs(mu)*S;
+	if (mu >= 0){
+		b = (sqrt(TMath::Power(a,2)-8*mu*S*m+f*(m-n+2*f-2*mu*S))+D-2*mu*S)/4;
+	}
+	else{
+		b = (sqrt(TMath::Power(a,2)+8*mu*S*n+f*(n-m+2*f+2*mu*S))+D+2*mu*S)/4;
 	}
 	return b;
 }
@@ -66,6 +99,36 @@ double LogL(Data d,double mu)
 		else
 		{
 			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],b-mu*d.m_S[i]))+TMath::Log(TMath::Poisson(d.m_m[i],b)));
+		}
+	}
+	return l;
+}
+
+double LogL_poly(Data d,double* muHat_poly)
+//for L3
+{
+	double l=0;
+	for (int i=d.m_minBin-1; i<d.m_maxBin; i++){
+		//calculate poly
+		double x2 = d.m_Bins[i+1];
+		double x1 = d.m_Bins[i];
+		double a = muHat_poly[1];
+		double f = (muHat_poly[2]/(a+1))*(TMath::Power(x2,a+1)-TMath::Power(x1,a+1))+
+				muHat_poly[3]*(x2-x1) +
+				(muHat_poly[4]/2)*(TMath::Power(x2,2)-TMath::Power(x1,2))+
+				(muHat_poly[5]/3)*(TMath::Power(x2,3)-TMath::Power(x1,3));
+
+		//bhathat
+		double b = getB(d.m_n[i],d.m_m[i],d.m_S[i],muHat_poly[0],f);
+		if (d.m_n[i]+d.m_m[i] < 0.01){continue;}
+		if (muHat_poly[0]>=0)
+		{
+			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],b+f))+TMath::Log(TMath::Poisson(d.m_m[i],b-f+muHat_poly[0]*d.m_S[i])));
+			if (l>10000000000) {cout<< "LogL:: i = " << i << ", n = " << d.m_n[i] << ", m = " << d.m_m[i] << ", b = " << b << ", S = " << d.m_S[i]<<endl;}
+		}
+		else
+		{
+			l -= 2*(TMath::Log(TMath::Poisson(d.m_n[i],b+f-muHat_poly[0]*d.m_S[i]))+TMath::Log(TMath::Poisson(d.m_m[i],b-f)));
 		}
 	}
 	return l;
