@@ -42,8 +42,8 @@ void InitExterns()
 	PATHnoJets = "../../CutFlowOptimization/14_08_18_20GeVJets/SR_noJets/";
 	PATHwithJets = "../../CutFlowOptimization/14_08_18_20GeVJets/SR_withJets/";
 
-	HISTO_NAME_ME = "nom/ME_MMC_Unblind";//McollHiggs_Unblind";
-	HISTO_NAME_EM = "nom/EM_MMC_Unblind";//McollHiggs_Unblind";
+	HISTO_NAME_ME = "nom/ME_McollHiggs_Unblind";
+	HISTO_NAME_EM = "nom/EM_McollHiggs_Unblind";
 	//see functions FindEM etc. in utilities.cxx for the complete format
 
 	COLL_MASS_MIN = 0;
